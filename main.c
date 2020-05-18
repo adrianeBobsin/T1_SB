@@ -133,7 +133,7 @@ int main(int argc, char** argv)
             float altura = y/1000.00;
             float largura = x/1000.00;
             if (fp != NULL) {
-                fprintf(fp,"\n %1.2f %1.2f %d %d %d", altura, largura, out[y][x].r, out[y][x].g, out[y][x].b);
+                fprintf(fp,"\n %1.2f %1.2f %d %d %d", largura, altura, out[y][x].r, out[y][x].g, out[y][x].b);
                 
             }
         }
