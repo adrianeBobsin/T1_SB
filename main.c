@@ -32,6 +32,12 @@ typedef struct {
     Pixel* img;
 } Img;
 
+// Uma semente
+typedef struct {
+    double x, y;
+    int r, g, b;
+} Semente;
+
 // Protótipos
 void load(char* name, Img* pic);
 void valida();
@@ -119,14 +125,13 @@ int main(int argc, char** argv)
 	// Leitura da imagem
     FILE *fp = fopen("myfile.txt","w+");
     printf("%d %d", pic[0].width, pic[0].height);
-    for(int y=0; y<height/2; y++) {
-        for(int x=y; x<width/2; x++) {
+    for(int y=0; y<height; y++) {
+        for(int x=0; x<width; x++) {
             out[y][x].r = in[y][x].r;
             out[y][x].g = in[y][x].g;
             out[y][x].b = in[y][x].b;
             float altura = y/1000.00;
             float largura = x/1000.00;
-           // printf("\n %1.2f %1.2f %d %d %d", altura, largura, out[y][x].r, out[y][x].g, out[y][x].b);
             if (fp != NULL) {
                 fprintf(fp,"\n %1.2f %1.2f %d %d %d", altura, largura, out[y][x].r, out[y][x].g, out[y][x].b);
                 
