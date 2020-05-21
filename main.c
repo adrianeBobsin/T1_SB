@@ -35,7 +35,7 @@ typedef struct {
 // Uma semente
 typedef struct {
     double x, y;
-    int r, g, b;
+    unsigned char r, g, b;
 } Semente;
 
 // Protótipos
@@ -122,22 +122,61 @@ int main(int argc, char** argv)
     Pixel (*in)[width] = (Pixel(*)[width]) pic[0].img;
     Pixel (*out)[width] = (Pixel(*)[width]) pic[1].img;
 
-	// Leitura da imagem
-    FILE *fp = fopen("myfile.txt","w+");
+    //Cria arquivo com coordanadas da imagem de saída
+    FILE *fp = fopen("output.txt","w+");
     printf("%d %d", pic[0].width, pic[0].height);
+
+    //Cria sementes aleatórias na imagem
+    Semente sementeVet[10000];
+    int y=10;
+    int s=0;
+    while(y < height) {
+        int x=10;
+        while(x<width) {
+            if (!(in[y][x].r == 255 && in[y][x].g == 255 && in[y][x].b == 255)) {
+                if (!(in[y][x].r == in[y-1][x-1].r && in[y][x].g == in[y-1][x-1].g && in[y][x].b == in[y-1][x-1].b)) {
+                    sementeVet[s].r = in[y][x].r;
+                    sementeVet[s].g = in[y][x].g;
+                    sementeVet[s].b = in[y][x].b;
+                    sementeVet[s].x = x;
+                    sementeVet[s].y = y;
+                    s++;
+                }
+            }
+            
+            x = x+10;
+        }
+        y = y+10;
+    }
+    
+    
+	// Leitura de todos os pixels da imagem    
     for(int y=0; y<height; y++) {
         for(int x=0; x<width; x++) {
-            out[y][x].r = in[y][x].r;
-            out[y][x].g = in[y][x].g;
-            out[y][x].b = in[y][x].b;
+            double pontoMenor = 1000000000.0;
+            int regiao = 0;
+            for (int sementes=0; sementes<s; sementes++) {
+                double distX = x - sementeVet[sementes].x;
+                distX = pow(distX, 2);
+                double distY = y - sementeVet[sementes].y;
+                distY = pow(distY, 2);
+                double dist = sqrt(distX+distY);
+                if (dist < pontoMenor) {
+                    pontoMenor = dist;
+                    regiao = sementes;
+                }
+            }
+
+            out[y][x].r = sementeVet[regiao].r;
+            out[y][x].g = sementeVet[regiao].g;
+            out[y][x].b = sementeVet[regiao].b;
             float altura = y/1000.00;
             float largura = x/1000.00;
-            if (fp != NULL) {
-                fprintf(fp,"\n %1.2f %1.2f %d %d %d", largura, altura, out[y][x].r, out[y][x].g, out[y][x].b);
-                
-            }
+            // Printa coordanadas no arquivo txt p/ teste
+            fprintf(fp,"\n %1.2f %1.2f %d %d %d", largura, altura, out[y][x].r, out[y][x].g, out[y][x].b);
         }
     }
+    //Fecha o arquivo de texto
     fclose(fp);
 
 	// Cria texturas em memória a partir dos pixels das imagens
